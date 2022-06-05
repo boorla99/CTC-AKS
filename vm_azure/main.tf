@@ -52,16 +52,28 @@ resource "azurerm_network_security_group" "nsg" {
   resource_group_name = azurerm_resource_group.rg.name
 
   security_rule {
-    name                       = "SSH"     #name for indentification
-    priority                   = 1001      #which gives weight lower the number The higher the priority
-    direction                  = "Inbound" 
-    access                     = "Allow"   #action what to do with trafficallow /deny
-    protocol                   = "Tcp"       #TCP,UDP
-    source_port_range          = "*"    #what source traffic originate
-    destination_port_range     = "22"   #whwreit it reaching on what port 
+    name                       = "SSH" #name for indentification
+    priority                   = 1001  #which gives weight lower the number The higher the priority
+    direction                  = "Inbound"
+    access                     = "Allow" #action what to do with trafficallow /deny
+    protocol                   = "Tcp"   #TCP,UDP
+    source_port_range          = "*"     #what source traffic originate
+    destination_port_range     = "22"    #whwreit it reaching on what port 
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "http" #name for indentification
+    priority                   = 1009   #which gives weight lower the number The higher the priority
+    direction                  = "Inbound"
+    access                     = "Allow" #action what to do with trafficallow /deny
+    protocol                   = "Tcp"   #TCP,UDP
+    source_port_range          = "*"     #what source traffic originate
+    destination_port_range     = "8080"  #whwreit it reaching on what port 
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  # ]
 
   tags = {
     environment = "production"
@@ -121,9 +133,9 @@ resource "tls_private_key" "example_ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
-output "tls_private_key" { 
-    value = tls_private_key.example_ssh.private_key_pem 
-    sensitive = true
+output "tls_private_key" {
+  value     = tls_private_key.example_ssh.private_key_pem
+  sensitive = true
 }
 
 # Create virtual machine
@@ -141,13 +153,13 @@ resource "azurerm_linux_virtual_machine" "linuxvm" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "7-LVM"
     version   = "latest"
   }
 
-  computer_name                   = "myvm"
+  computer_name                   = "rhelboorla"
   admin_username                  = "azureuser"
   disable_password_authentication = true
 
@@ -161,6 +173,6 @@ resource "azurerm_linux_virtual_machine" "linuxvm" {
   }
 
   tags = {
-    environment = "demo"
+    environment = "prod"
   }
 }
